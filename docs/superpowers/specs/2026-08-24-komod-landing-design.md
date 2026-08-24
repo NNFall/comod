@@ -59,7 +59,7 @@ The screenshots are displayed as full-page imagery with invisible interaction ho
 
 ### 5. Seasonal reasons to visit
 
-- Reference event cards are preserved visually but content becomes `Сезонное меню`, `Komod club` and `Завтраки каждый день`.
+- Reference event cards are preserved visually but content becomes `Сезонное меню`, `Встретиться за кофе` and `Завтраки каждый день`. The middle slot deliberately avoids the unsupported historical `Komod club` claim because no directly verifiable source permalink was available.
 - No invented 2026 event dates. The 2025 Yandex seasonal post may be linked as historical context but not presented as current.
 - Filters animate the visible selection locally; `Все`, `Сезонное`, `Для постоянных гостей`, `Каждый день`.
 

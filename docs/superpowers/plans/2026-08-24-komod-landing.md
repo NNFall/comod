@@ -367,7 +367,7 @@ Run: `npm.cmd test -- --run src/scenes/EventsScene.test.tsx`
 
 **Step 3: Implement reference structure with truthful content**
 
-At 1672 px preserve the left intro x=59–458 and three card columns beginning around x=521, 878 and 1233 with approximately 330 px widths, plus the dark lower banner. Use seasonal menu, Komod club and everyday breakfasts as reasons to visit, without presenting historical posts as current events.
+At 1672 px preserve the left intro x=59–458 and three card columns beginning around x=521, 878 and 1233 with approximately 330 px widths, plus the dark lower banner. Use seasonal menu, an editorial “Встретиться за кофе” scenario and everyday breakfasts as reasons to visit. The reference-era `Komod club` slot is intentionally replaced because no directly verifiable source permalink is available; do not present mirror-only or historical posts as current facts.
 
 **Step 4: Run and confirm GREEN**
 
