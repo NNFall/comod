@@ -11,10 +11,11 @@ const menuCaveat =
 
 export const siteContent = {
   navigation: [
+    { href: '#menu', label: 'Меню' },
     { href: '#breakfasts', label: 'Завтраки' },
     { href: '#work', label: 'Для работы' },
-    { href: '#about', label: 'О Комоде' },
-    { href: '#events', label: 'Поводы заглянуть' },
+    { href: '#about', label: 'О нас' },
+    { href: '#events', label: 'События' },
     { href: '#contacts', label: 'Контакты' },
   ],
   identity: {

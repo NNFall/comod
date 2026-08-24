@@ -15,5 +15,6 @@ describe('Komod landing shell', () => {
     const scenes = screen.getAllByRole('region')
     expect(scenes).toHaveLength(6)
     scenes.forEach((scene) => expect(scene).toHaveAccessibleName())
+    expect(document.getElementById('menu')).toBeInTheDocument()
   })
 })
