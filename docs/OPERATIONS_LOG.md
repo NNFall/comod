@@ -14,7 +14,7 @@ This is a concise decision/evidence history. It records material actions, not cr
 
 - Wrote `PRODUCT.md`, `DESIGN.md`, the design specification and the TDD implementation plan.
 - Ran independent agents for reference decomposition, architecture/test planning and source/provenance review.
-- Started Antigravity read-only audits twice; both terminated before the first model token while the wrapper doctor reported executable, settings and storage healthy. A later diagnostic retry remains scheduled.
+- Started Antigravity read-only audits twice; both terminated before the first model token while the wrapper doctor reported executable, settings and storage healthy. Two bounded diagnostic retries were attempted later and are recorded below.
 - Applied review findings: explicit source pack, no-JS fallback, two-step booking without unverified WhatsApp, per-scene visual TDD, CI/default-branch preflight and final evidence commit.
 
 ## 2026-08-24 — ImageGen pass 1
@@ -35,3 +35,45 @@ This is a concise decision/evidence history. It records material actions, not cr
 
 - Direct `vk.ru/komod_samara` and `vk.com/komod_samara` opens again returned non-retryable errors in managed sources.
 - A current search-indexed mirror at `https://komod-samara.orgs.biz/` was reachable read-only and exposes apparent VK-origin post text plus `userapi.com` media URLs. This is useful for selection research, but it is not equivalent to direct VK DOM/permalink verification; its inconsistent legacy address fields are excluded from published facts.
+
+## 2026-08-24 — managed-browser VK-origin extraction
+
+- Reopened the public mirror in the managed in-app browser, read its rendered DOM and followed its individual news pages. The pages expose exact VK source permalinks such as `wall-118960395_3561`, `_3558`, `_3540`, `_3537` and `_3515`; direct VK itself remained inaccessible.
+- Parsed the dated 2026 archive: 27 April address/weather video, 24 April Coffee Tea Cacao Expo team post, 5 March chicory post, 26 February Lenten-menu videos and 5 January winter entrance post. These are dated archive evidence, not automatically current promotions.
+- Visually inspected the initial 20 mirror/gallery candidates and seven full-resolution 2026 `userapi.com` frames. Rejected low-resolution legacy-gallery images, obvious old-location imagery and people-led expo frames for the production composition. Selected only a high-resolution real cup frame and a high-resolution current-address winter storefront frame for the provenance pack, both still gated by owner approval.
+- Rejected the mirror's legacy `Костюкова, 69` metadata and messenger links. The current address remains sourced from Yandex and the dated VK-origin posts that explicitly say `Галактионовская, 130`.
+
+## 2026-08-24 — ImageGen documentary-edit audit
+
+- Ran three separate image-to-image passes on the real exterior, interior and breakfast originals. Every prompt prohibited object, person, signage, geometry, ingredient and portion changes and requested only restrained colour/crop work.
+- The outputs improved contrast and composition but reconstructed material details: small facade/people/signage details, lamp/menu-board/employee details and food/portion geometry. All three were rejected from production and remain outside the repository; hashes and reasons are recorded in `docs/IMAGEGEN.md`.
+- This is the explicit safety boundary: a pleasant AI reconstruction is not a documentary photograph. The site uses the unchanged originals for venue evidence and labels any later accepted transform separately.
+
+## 2026-08-24 — local background-removal comparison
+
+- Ran `remove-background-local` on the real `big-breakfast.webp` with `soft` and `0.30`, then inspected both checkerboard previews. `soft` preserved the plate/food edge; `0.30` cut holes near the bowl/food and was rejected.
+- Ran the same comparison on `coffee-cup.webp`. Both preserved the cup, saucer, handle and spoon; `0.30` produced the cleaner edge and was selected for the later derived-assets pass.
+- No cutout was copied into production before provenance registration. The selected outputs stay in the skill output directory until Task 9 adds them as `documentary-derived` assets.
+
+## 2026-08-24 — Antigravity retries
+
+- The third analysis attempt failed before model execution because `gemini-3.7-flash-high` does not accept `low` effort. This was a configuration error with zero model tokens, not a review result.
+- The fourth and final bounded analysis retry also failed before model execution: the installed Antigravity profile rejects `medium` effort for `gemini-3.7-flash-high`. It consumed zero model tokens and produced no review result. The four-job skill limit is now exhausted, so no Antigravity conclusion is used as evidence.
+
+## 2026-08-24 — responsive form and navigation hardening
+
+- Independent contacts review found real mobile overflow, fixed-height booking overflow, focus loss between form steps, missing required semantics, low contrast and missing intrinsic media dimensions. The form now grows for validation/summary states, focuses the first invalid field or summary status, exposes live errors, keeps the booking action explicitly local (copy-and-call, no submission endpoint), and has no unsupported guest maximum.
+- Browser review is green at 1672, 390 and 320 px: no visible clipped content, `document.documentElement.scrollWidth === clientWidth`, no runtime errors, focus transitions `body → Дата → Имя → status → Имя`, and contrast ratios 6.01:1 / 5.28:1.
+- Mobile disclosure scroll-jump was traced to font/layout settling plus `body { overflow: hidden }` and the fixed-header override. The header remains sticky, background locking uses `overflow: clip`, and navigation tests wait for `document.fonts.ready` before measuring scroll preservation.
+
+## 2026-08-24 — final visual QA snapshot
+
+- The locked visual harness was run in Chromium at 1672×941 with reduced motion, decoded local media, provenance/hash checks and exact geometry guides. Required media, swatches, map routes and scene geometry pass; the raw UI mismatch remains intentional because supplied screens contain synthetic/reference-specific copy, decoration and image compositions while the implementation preserves verified venue facts and visible caveats.
+- Latest raw pixel ratios: hero 14.98%, events 13.84%, contacts 9.64%, about 15.79%, work 14.22%, breakfasts 15.96%. These are reported rather than hidden by weakening masks. Work/about typography was tuned to the locked composition while retaining truthful copy; contacts matches the locked geometry and accessibility gates.
+
+## 2026-08-24 — scroll reveal and final handoff evidence
+
+- Connected the tested `Reveal` primitive to the key copy blocks in all six production scenes (hero, breakfasts, work, about, events, contacts). Reduced motion remains immediately visible, so locked geometry and accessibility snapshots do not shift; normal motion gets IntersectionObserver-driven reveal alongside hover and carousel transitions.
+- Added final handoff artifacts: `README.md`, `docs/QA.md`, `docs/REVIEW.md`, `docs/FINAL_REPORT.md`, and `docs/evidence/README.md`. They record exact commands, viewport evidence paths, source-access boundaries, generated/documentary separation, intentional pixel-contract RED status, and implementation deviations.
+- Fresh post-change unit suite remains 16 files / 81 tests green. Browser smoke/navigation/axe remains 5/5 green; no-overflow/runtime probe remains green at 1920, 1672, 390 and 320 px.
+- The post-reveal visual rerun retained the same intentional RED contract: hero 14.98%, events 13.83%, contacts 9.62%, about 15.80%, work 14.24%, breakfasts 15.95%; geometry, provenance and map checks still pass.

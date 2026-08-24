@@ -40,9 +40,58 @@ describe('Komod content provenance contract', () => {
       expect(item.documentary).toBe(item.kind === 'documentary')
 
       if (item.kind === 'documentary') {
-        expect(item.sourceUrl).toMatch(/^https:\/\/avatars\.mds\.yandex\.net\//)
+        expect(item.sourceUrl).toMatch(/^https:\/\//)
+        expect(item.sourcePageUrl).toMatch(/^https:\/\//)
+        expect(item.immutableSourcePath).toMatch(/^source-assets\//)
+        expect(['direct-public-gallery', 'public-mirror']).toContain(
+          item.sourceAccess,
+        )
       }
     })
+  })
+
+  it('keeps only the neutral VK-origin frame in the production manifest', () => {
+    expect(mediaById.get('vk-chicory-cups-2026-03-05')).toMatchObject({
+      sourcePublishedOn: '2026-03-05',
+      sourcePageUrl: 'https://komod-samara.orgs.biz/news/3540',
+      originUrl: 'https://vk.com/club118960395?w=wall-118960395_3540',
+      sha256:
+        '8AB9E5BF322F4DF213251FBB35114862C4FCA306CFF99C2552EEE81B500B36A1',
+      width: 1706,
+      height: 2560,
+    })
+    expect(mediaManifest.map((asset) => asset.id)).not.toContain(
+      'vk-winter-storefront-2026-01-05',
+    )
+
+    const item = mediaById.get('vk-chicory-cups-2026-03-05')
+
+    expect(item).toMatchObject({
+      kind: 'documentary',
+      documentary: true,
+      sourceAccess: 'public-mirror',
+      rightsStatus: 'owner-approval-required',
+    })
+
+    if (!item || item.kind !== 'documentary') return
+
+    expect(item.sourceLabel).toMatch(/VK-origin.*public mirror/iu)
+    expect(item.sourceUrl).toMatch(/^https:\/\/sun9-[^.]+\.userapi\.com\//)
+    expect(item.sourcePageUrl).toMatch(
+      /^https:\/\/komod-samara\.orgs\.biz\/news\/\d+$/,
+    )
+    expect('originUrl' in item).toBe(true)
+    expect('sourcePublishedOn' in item).toBe(true)
+
+    if (!('originUrl' in item) || !('sourcePublishedOn' in item)) return
+
+    expect(item.originUrl).toMatch(
+      /^https:\/\/vk\.com\/club118960395\?w=wall-118960395_\d+$/,
+    )
+    expect(item.immutableSourcePath).toMatch(
+      /^source-assets\/vk-mirror-2026-08-24\//,
+    )
+    expect(item.sourcePublishedOn).toMatch(/^2026-\d{2}-\d{2}$/)
   })
 
   it('resolves every content media reference through the provenance manifest', () => {

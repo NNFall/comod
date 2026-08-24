@@ -216,7 +216,7 @@ describe('SiteHeader', () => {
     const mobileNavigation = screen.getByRole('navigation', {
       name: 'Мобильная навигация',
     })
-    expect(document.body.style.overflow).toBe('hidden')
+    expect(document.body.style.overflow).toBe('clip')
     await waitFor(() =>
       expect(within(mobileNavigation).getAllByRole('link')[0]).toHaveFocus(),
     )
@@ -239,7 +239,7 @@ describe('SiteHeader', () => {
     renderHeaderWithSections()
 
     await user.click(screen.getByRole('button', { name: 'Открыть меню' }))
-    expect(document.body.style.overflow).toBe('hidden')
+    expect(document.body.style.overflow).toBe('clip')
 
     act(() => media.setMatches(desktopHeaderQuery, true))
 
@@ -294,7 +294,7 @@ describe('SiteHeader', () => {
     const view = renderHeaderWithSections()
 
     await user.click(screen.getByRole('button', { name: 'Открыть меню' }))
-    expect(document.body.style.overflow).toBe('hidden')
+    expect(document.body.style.overflow).toBe('clip')
 
     view.unmount()
     expect(document.body.style.overflow).toBe('auto')

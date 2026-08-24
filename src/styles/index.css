@@ -5,7 +5,7 @@
   --color-coral: #f5433d;
   --color-espresso: #24140e;
   --color-roasted: #5a2a18;
-  --color-paper: #fff3df;
+  --color-paper: #f9deb6;
   --color-paper-light: #fff9ef;
   --color-latte: #f8dfc0;
   --color-line: #e8cdaa;
@@ -71,6 +71,18 @@ button {
   background: var(--color-paper);
 }
 
+.site-header[data-active-section="home"] {
+  border-bottom-color: rgb(36 20 14 / 10%);
+  background:
+    linear-gradient(
+      103deg,
+      var(--color-orange) 0%,
+      var(--color-orange) 55.5%,
+      var(--color-paper) 60.5%,
+      var(--color-paper) 100%
+    );
+}
+
 .site-header__inner {
   display: grid;
   min-height: var(--header-height);
@@ -92,9 +104,17 @@ button {
 }
 
 .brand-mark__word {
-  font-size: clamp(1.7rem, 2vw, 2.15rem);
+  display: grid;
+  width: max-content;
+  font-size: clamp(1.45rem, 1.7vw, 1.85rem);
   font-weight: 900;
-  letter-spacing: -0.09em;
+  letter-spacing: -0.11em;
+  line-height: 0.76;
+  text-transform: uppercase;
+}
+
+.brand-mark__word span {
+  display: block;
 }
 
 .brand-mark__descriptor {
@@ -310,6 +330,10 @@ footer {
 }
 
 @media (max-width: 74rem) {
+  .site-header[data-active-section="home"] {
+    background: var(--color-orange);
+  }
+
   :root {
     --header-height: 4.625rem;
     --site-gutter: clamp(1.25rem, 5vw, 3rem);
@@ -321,9 +345,7 @@ footer {
   }
 
   .site-header[data-menu-open] {
-    position: fixed;
-    right: 0;
-    left: 0;
+    position: sticky;
   }
 
   .desktop-navigation,

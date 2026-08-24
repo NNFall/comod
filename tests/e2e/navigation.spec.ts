@@ -47,6 +47,7 @@ test('mobile focus does not move the page and widening closes the disclosure', a
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('/', { waitUntil: 'networkidle' })
+  await page.evaluate(() => document.fonts.ready)
   await page.evaluate(() => window.scrollTo(0, 1200))
   const initialScroll = await page.evaluate(() => window.scrollY)
 

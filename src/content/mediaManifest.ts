@@ -2,6 +2,9 @@ import type { MediaAsset } from '../types/content'
 
 const yandexSourceLabel = 'Яндекс Карты — публичная галерея «Комод»'
 const yandexCaptureDate = '2026-08-24'
+const yandexOrganisationUrl =
+  'https://yandex.ru/maps/org/komod/231221046215/' as const
+const vkMirrorCaptureDate = '2026-08-24'
 
 const yandexDocumentaryAssets = [
   {
@@ -228,6 +231,45 @@ const yandexDocumentaryAssets = [
     width: 852,
     height: 1280,
   },
+] as const
+
+const registeredYandexDocumentaryAssets = yandexDocumentaryAssets.map(
+  (item) => ({
+    ...item,
+    sourceAccess: 'direct-public-gallery' as const,
+    sourcePageUrl: yandexOrganisationUrl,
+    immutableSourcePath:
+      `source-assets/yandex-2026-08-24/${item.src.split('/').at(-1)}` as `source-assets/yandex-2026-08-24/${string}`,
+  }),
+) satisfies readonly MediaAsset[]
+
+const vkMirrorDocumentaryAssets = [
+  {
+    id: 'vk-chicory-cups-2026-03-05',
+    src: '/media/documentary/originals/vk-chicory-cups-2026-03-05.jpg',
+    kind: 'documentary',
+    documentary: true,
+    recordedOn: vkMirrorCaptureDate,
+    sourcePublishedOn: '2026-03-05',
+    sourceLabel:
+      'VK-origin media через public mirror orgs.biz; прямой VK не открыт',
+    sourceUrl:
+      'https://sun9-46.userapi.com/s/v1/ig2/AyoGwJIgTcUDMjxkCSKZvJ28Bq5r8Wn78skWP6QzZVNQAA4aPdkaY3hnylCbsWuHghbN1PHz7LOvpLxEuafgRW1l.jpg?quality=95&as=32x48,48x72,72x108,108x162,160x240,240x360,360x540,480x720,540x810,640x960,720x1080,1080x1621,1280x1921,1440x2161,1706x2560&from=bu',
+    sourceAccess: 'public-mirror',
+    sourcePageUrl: 'https://komod-samara.orgs.biz/news/3540',
+    originUrl:
+      'https://vk.com/club118960395?w=wall-118960395_3540',
+    immutableSourcePath:
+      'source-assets/vk-mirror-2026-08-24/vk-chicory-cups-2026-03-05.jpg',
+    rightsStatus: 'owner-approval-required',
+    transformationNote:
+      'Неизменённые байты полноразмерного userapi-файла; преобразования не выполнялись.',
+    altStrategy:
+      'Описывать две чашки напитков в светлом интерьере без утверждения о текущем меню или составе.',
+    sha256: '8AB9E5BF322F4DF213251FBB35114862C4FCA306CFF99C2552EEE81B500B36A1',
+    width: 1706,
+    height: 2560,
+  },
 ] as const satisfies readonly MediaAsset[]
 
 const generatedDecorativeAssets = [
@@ -264,7 +306,8 @@ const generatedDecorativeAssets = [
 ] as const satisfies readonly MediaAsset[]
 
 export const mediaManifest = [
-  ...yandexDocumentaryAssets,
+  ...registeredYandexDocumentaryAssets,
+  ...vkMirrorDocumentaryAssets,
   ...generatedDecorativeAssets,
 ] as const satisfies readonly MediaAsset[]
 

@@ -66,7 +66,10 @@ export function SiteHeader() {
         ?.focus({ preventScroll: true })
     }, 0)
 
-    document.body.style.overflow = 'hidden'
+    // `clip` locks background scrolling without turning the body into a
+    // nested scroll container, which would make the sticky header jump out of
+    // view while the disclosure is open.
+    document.body.style.overflow = 'clip'
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -113,7 +116,11 @@ export function SiteHeader() {
   const closeMobileMenu = () => setIsMenuOpen(false)
   const toggleMobileMenu = () => setIsMenuOpen((isOpen) => !isOpen)
   return (
-    <header className="site-header" data-menu-open={isMenuOpen ? '' : undefined}>
+    <header
+      className="site-header"
+      data-active-section={activeSection}
+      data-menu-open={isMenuOpen ? '' : undefined}
+    >
       <div className="site-header__inner">
         <BrandMark current={activeSection === 'home'} />
 

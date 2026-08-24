@@ -10,6 +10,22 @@ export type MediaRightsStatus =
   | 'project-generated'
   | 'private-reference-only'
 
+export type MediaSourceAccess =
+  | 'direct-public-gallery'
+  | 'public-mirror'
+
+export type IsoDateString = `${number}-${number}-${number}`
+export type YandexDocumentaryAssetUrl =
+  `https://avatars.mds.yandex.net/${string}`
+export type KomodYandexOrganisationUrl =
+  'https://yandex.ru/maps/org/komod/231221046215/'
+export type KomodMirrorPageUrl =
+  `https://komod-samara.orgs.biz/news/${number}`
+export type KomodVkPermalink =
+  `https://vk.com/club118960395?w=wall-118960395_${number}`
+export type VkUserapiAssetUrl =
+  `https://sun9-${string}.userapi.com/${string}`
+
 interface MediaAssetBase {
   readonly id: string
   readonly src: string
@@ -24,12 +40,35 @@ interface MediaAssetBase {
   readonly height: number
 }
 
-export interface DocumentaryMediaAsset extends MediaAssetBase {
+interface DocumentaryMediaAssetBase extends MediaAssetBase {
   readonly kind: 'documentary'
   readonly documentary: true
-  readonly sourceUrl: string
   readonly rightsStatus: 'owner-approval-required'
 }
+
+export interface DirectGalleryDocumentaryAsset
+  extends DocumentaryMediaAssetBase {
+  readonly sourceAccess: 'direct-public-gallery'
+  readonly sourceUrl: YandexDocumentaryAssetUrl
+  readonly sourcePageUrl: KomodYandexOrganisationUrl
+  readonly immutableSourcePath: `source-assets/yandex-2026-08-24/${string}`
+  readonly originUrl?: never
+  readonly sourcePublishedOn?: never
+}
+
+export interface PublicMirrorDocumentaryAsset
+  extends DocumentaryMediaAssetBase {
+  readonly sourceAccess: 'public-mirror'
+  readonly sourceUrl: VkUserapiAssetUrl
+  readonly sourcePageUrl: KomodMirrorPageUrl
+  readonly originUrl: KomodVkPermalink
+  readonly immutableSourcePath: `source-assets/vk-mirror-2026-08-24/${string}`
+  readonly sourcePublishedOn: IsoDateString
+}
+
+export type DocumentaryMediaAsset =
+  | DirectGalleryDocumentaryAsset
+  | PublicMirrorDocumentaryAsset
 
 export interface NonDocumentaryMediaAsset extends MediaAssetBase {
   readonly kind: Exclude<MediaKind, 'documentary'>

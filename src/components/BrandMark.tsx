@@ -10,7 +10,10 @@ export function BrandMark({ current = false }: BrandMarkProps) {
       aria-label="Комод, на главную"
       aria-current={current ? 'page' : undefined}
     >
-      <span className="brand-mark__word">КОМОД</span>
+      <span className="brand-mark__word" aria-hidden="true">
+        <span>КО</span>
+        <span>МОД</span>
+      </span>
       <span className="brand-mark__descriptor">городская кофейня</span>
     </a>
   )

@@ -5,6 +5,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { dirname, join, normalize, relative, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import sharp from 'sharp'
+import { resolveImmutableSourcePath } from './media-source-paths.ts'
 
 const scriptDirectory = dirname(fileURLToPath(import.meta.url))
 const projectRoot = resolve(scriptDirectory, '..')
@@ -95,17 +96,84 @@ for (const item of mediaManifest) {
   }
 
   if (item.kind === 'documentary') {
-    const sourceAsset = resolve(
-      projectRoot,
-      'source-assets',
-      'yandex-2026-08-24',
-      absolutePath.split(/[\\/]/).at(-1),
-    )
+    if (!item.immutableSourcePath?.startsWith('source-assets/')) {
+      errors.push(`Invalid immutable source path for ${item.src}`)
+    } else {
+      try {
+        const sourceAsset = resolveImmutableSourcePath({
+          projectRoot,
+          sourceAccess: item.sourceAccess,
+          immutableSourcePath: item.immutableSourcePath,
+        })
 
-    if (!existsSync(sourceAsset)) {
-      errors.push(`Missing immutable source for ${item.src}`)
-    } else if (sha256(sourceAsset) !== actualHash) {
-      errors.push(`Documentary copy differs from immutable source: ${item.src}`)
+        if (!existsSync(sourceAsset) || !statSync(sourceAsset).isFile()) {
+          errors.push(`Missing immutable source for ${item.src}`)
+        } else if (sha256(sourceAsset) !== actualHash) {
+          errors.push(
+            `Documentary copy differs from immutable source: ${item.src}`,
+          )
+        }
+      } catch (error) {
+        errors.push(`${error.message}: ${item.src}`)
+      }
+    }
+
+    if (!['direct-public-gallery', 'public-mirror'].includes(item.sourceAccess)) {
+      errors.push(`Invalid source access classification for ${item.src}`)
+    }
+
+    if (!item.sourcePageUrl?.startsWith('https://')) {
+      errors.push(`Missing HTTPS source page for ${item.src}`)
+    }
+
+    if (item.sourceAccess === 'public-mirror') {
+      const mirrorPageMatch =
+        /^https:\/\/komod-samara\.orgs\.biz\/news\/(?<postId>\d+)$/.exec(
+          item.sourcePageUrl,
+        )
+      const vkPermalinkMatch =
+        /^https:\/\/vk\.com\/club118960395\?w=wall-118960395_(?<postId>\d+)$/.exec(
+          item.originUrl ?? '',
+        )
+
+      if (
+        !item.immutableSourcePath.startsWith(
+          'source-assets/vk-mirror-2026-08-24/',
+        )
+      ) {
+        errors.push(`VK-origin source is outside its immutable pack: ${item.src}`)
+      }
+
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(item.sourcePublishedOn ?? '')) {
+        errors.push(`Missing source publication date for ${item.src}`)
+      }
+
+      if (!mirrorPageMatch) {
+        errors.push(`Unexpected public-mirror page for ${item.src}`)
+      }
+
+      if (!vkPermalinkMatch) {
+        errors.push(`Missing exact VK origin permalink for ${item.src}`)
+      }
+
+      if (
+        mirrorPageMatch?.groups?.postId &&
+        vkPermalinkMatch?.groups?.postId &&
+        mirrorPageMatch.groups.postId !== vkPermalinkMatch.groups.postId
+      ) {
+        errors.push(`Mirror/VK post identifier mismatch for ${item.src}`)
+      }
+
+      if (!/^https:\/\/sun9-[^.]+\.userapi\.com\//.test(item.sourceUrl)) {
+        errors.push(`Unexpected VK-origin asset host for ${item.src}`)
+      }
+    } else if (
+      !item.sourceUrl.startsWith('https://avatars.mds.yandex.net/') ||
+      item.sourcePageUrl !==
+        'https://yandex.ru/maps/org/komod/231221046215/' ||
+      !item.immutableSourcePath.startsWith('source-assets/yandex-2026-08-24/')
+    ) {
+      errors.push(`Unexpected direct-gallery provenance for ${item.src}`)
     }
   }
 }
