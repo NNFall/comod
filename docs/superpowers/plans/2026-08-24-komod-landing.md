@@ -12,7 +12,16 @@
 
 ## Execution preflight
 
-The empty remote has no default branch. First commit this specification, plan, product/design context and immutable reference locks as the local root commit on `main`. Then create `codex/komod-landing` before application implementation. Keep implementation commits on that branch and defer remote integration until the final review workflow.
+The empty remote has no default branch. First commit this specification, plan, product/design context and immutable reference locks as the local root commit on `main`, push `main`, verify/set it as the default branch, then create `codex/komod-landing` before application implementation. Keep implementation commits on that branch and defer feature-branch integration until the final review workflow.
+
+```powershell
+git push -u origin main
+gh api --method PATCH repos/NNFall/comod -f default_branch=main
+git switch codex/komod-landing
+gh repo view NNFall/comod --json defaultBranchRef,visibility,url
+```
+
+**Skill gates:** brainstorming and writing-plans are required before this execution starts. Use `subagent-driven-development` for each implementation task and `dispatching-parallel-agents` only for file-disjoint work. Tasks 1–8 use `test-driven-development`; Tasks 3–10 use `design-taste-frontend` and `impeccable`; Task 9 must load and follow `imagegen` plus `remove-background-local`; Task 10 must load and follow `browser:control-in-app-browser` plus `playwright`; Task 11 must use `antigravity-worker` and `requesting-code-review`; Task 12 must use `verification-before-completion` and `finishing-a-development-branch`. Each gate is recorded in `docs/OPERATIONS_LOG.md` when invoked.
 
 ## Task 1: Bootstrap the application and verification harness
 
@@ -33,6 +42,7 @@ The empty remote has no default branch. First commit this specification, plan, p
 - Create: `playwright.config.ts`
 - Create: `tests/e2e/smoke.spec.ts`
 - Create: `.gitignore`
+- Create: `.github/workflows/ci.yml`
 
 **Step 1: Create the package manifest and install the declared toolchain**
 
@@ -40,7 +50,8 @@ Create `package.json` with `private: true`, ESM mode and the scripts listed belo
 
 ```powershell
 npm.cmd install react react-dom @fontsource-variable/onest @phosphor-icons/react
-npm.cmd install -D typescript vite @vitejs/plugin-react @tailwindcss/vite tailwindcss eslint @eslint/js typescript-eslint eslint-plugin-react-hooks eslint-plugin-react-refresh vitest jsdom @testing-library/react @testing-library/jest-dom @testing-library/user-event @playwright/test axe-core @axe-core/playwright
+npm.cmd install -D typescript vite @vitejs/plugin-react @tailwindcss/vite tailwindcss eslint @eslint/js typescript-eslint eslint-plugin-react-hooks eslint-plugin-react-refresh vitest jsdom @testing-library/react @testing-library/jest-dom @testing-library/user-event @playwright/test axe-core @axe-core/playwright @types/react @types/react-dom @types/node pixelmatch pngjs sharp @types/pixelmatch @types/pngjs
+npx.cmd playwright install chromium
 ```
 
 **Step 2: Write the failing render and browser smoke tests**
@@ -55,9 +66,9 @@ Expected: failure because the app shell and the six labelled scenes do not exist
 
 **Step 4: Add the minimal shell and configuration**
 
-Use these script contracts in `package.json`: `dev`, `build`, `preview`, `typecheck`, `lint`, `test`, `test:watch`, `test:e2e`, `test:a11y` and `verify`. Configure Vite dev/preview hosts as `127.0.0.1`, port `4173`, `strictPort: true`. Load Onest locally from `@fontsource-variable/onest`; do not add third-party runtime font requests.
+Use these script contracts in `package.json`: `dev=vite --host 127.0.0.1 --port 4173 --strictPort`, `build=tsc -b && vite build`, `preview=vite preview --host 127.0.0.1 --port 4173 --strictPort`, `typecheck=tsc -b --pretty false`, `lint=eslint .`, `test=vitest`, `test:watch=vitest`, `test:e2e=playwright test`, `test:a11y=playwright test tests/e2e/accessibility.spec.ts` and `verify=npm run typecheck && npm run lint && npm test -- --run && npm run build`. Configure Vite dev/preview hosts as `127.0.0.1`, port `4173`, `strictPort: true`. Load Onest locally from `@fontsource-variable/onest`; do not add third-party runtime font requests.
 
-`App.tsx` now renders a skip link, a minimal semantic header, `main`, six semantic regions with final IDs and a footer. Region copy must already be truthful final copy. Task 3 extracts and completes the production `SiteHeader` without changing the section contract.
+`App.tsx` now renders a skip link, a minimal semantic header, `main`, six semantic regions with final IDs and a footer. Region copy must already be truthful final copy. Task 3 extracts and completes the production `SiteHeader` without changing the section contract. `index.html` includes the no-JavaScript call/route fallback. CI on Ubuntu runs `npm ci`, `npm run verify`, installs Chromium and runs Playwright; the Playwright web-server command must branch between `npm.cmd` on Windows and `npm` elsewhere.
 
 **Step 5: Run unit, type and production checks and confirm GREEN**
 
@@ -74,7 +85,7 @@ Expected: all commands exit 0; `dist/index.html` exists.
 **Step 6: Commit the bounded bootstrap**
 
 ```powershell
-git add package.json package-lock.json tsconfig*.json vite.config.ts eslint.config.js index.html src playwright.config.ts tests/e2e/smoke.spec.ts .gitignore
+git add package.json package-lock.json tsconfig*.json vite.config.ts eslint.config.js index.html src playwright.config.ts tests/e2e/smoke.spec.ts tests/e2e/accessibility.spec.ts .gitignore .github/workflows/ci.yml source-assets/yandex-2026-08-24 docs/OPERATIONS_LOG.md docs/superpowers/plans/2026-08-24-komod-landing.md docs/superpowers/specs/2026-08-24-komod-landing-design.md
 git commit -m "chore: bootstrap Komod landing"
 ```
 
@@ -90,6 +101,8 @@ git commit -m "chore: bootstrap Komod landing"
 - Create: `public/media/documentary-derived/`
 - Create: `public/media/generated-decorative/`
 - Create: `public/media/reference-derived/`
+- Use immutable inputs: `source-assets/yandex-2026-08-24/*.webp`
+- Use source manifest: `source-assets/yandex-2026-08-24/README.md`
 - Create: `docs/SOURCES.md`
 - Create: `docs/CONTENT_VERIFICATION.md`
 - Create: `scripts/check-media-manifest.mjs`
@@ -106,7 +119,9 @@ Expected: failure because the typed content and manifest do not exist.
 
 **Step 3: Copy and classify source assets**
 
-Copy only visually inspected Yandex originals needed by the six scenes into `public/media/documentary/originals/`, keeping stable descriptive names. Preserve the original files and record the exact CDN page-asset URL, source surface, date `2026-08-24`, observed dimensions and `rightsStatus: owner-approval-required` in `docs/SOURCES.md` and the manifest.
+Copy only visually inspected Yandex originals needed by the six scenes from the committed `source-assets/yandex-2026-08-24/` pack into `public/media/documentary/originals/`, keeping the descriptive names. The source-pack README already records exact CDN page-asset URLs, capture date, dimensions and SHA-256 hashes; mirror those identifiers and `rightsStatus: owner-approval-required` in `docs/SOURCES.md` and the typed manifest. Never fetch assets at build/runtime and never overwrite the immutable source pack.
+
+Minimum mapping: exterior/contacts → `exterior-wide.webp`, `entrance-close.webp`; hero/about/work → `interior-wide.webp`, `yellow-chair.webp`, `illuminated-cabinet.webp`, `coffee-by-window.webp`; breakfasts → `marine-breakfast.webp`, `big-breakfast.webp`, `waffle-berries.webp`, `coffee-cup.webp`; seasonal cards → `cold-drinks.webp`, `marshmallow-drink.webp`. Each filename, source URL and hash is enumerated in `source-assets/yandex-2026-08-24/README.md`.
 
 Use downloaded photos only in the private prototype. State in `docs/CONTENT_VERIFICATION.md` that public commercial deployment requires an owner-approved media pack, current opening schedule, phone, menu/prices, feature list, event claims, brand assets and depicted-person consent. State explicitly that VK was not directly reviewed.
 
@@ -177,6 +192,45 @@ npm.cmd run lint
 ```powershell
 git add src/components src/hooks src/App.tsx src/styles/index.css
 git commit -m "feat: add responsive Komod navigation"
+```
+
+## Task 3A: Establish visual TDD before scene implementation
+
+**Required skills:** `test-driven-development`, `playwright`, `browser:control-in-app-browser`.
+
+**Files:**
+
+- Create: `tests/visual/contracts.ts`
+- Create: `tests/visual/compareReference.ts`
+- Create: `tests/e2e/scene-visual.spec.ts`
+- Create: `tests/visual/current/.gitkeep`
+- Create: `tests/visual/diff/.gitkeep`
+
+**Step 1: Define the immutable mapping and photo masks**
+
+Map `hero → 01-hero-1672x941.png`, `events → 02-events-1672x941.png`, `contacts → 03-contacts-1672x941.png`, `about → 04-about-1672x941.png`, `work → 05-work-1672x941.png`, `breakfasts → 06-breakfasts-1672x941.png`. For each contract, define the anchor URL, expected 1672×941 viewport, flat UI sample points, geometry guides and polygons/rectangles that mask only documentary-photo or reference-illustration pixels. Masks must not cover headings, cards, controls, section boundaries or decorative UI.
+
+**Step 2: Implement deterministic comparison**
+
+Playwright waits for `document.fonts.ready`, decoded images and the scene-ready marker, then captures exactly 1672×941 at DPR 1. `compareReference.ts` uses Sharp/PNGJS/pixelmatch to verify dimensions, apply the same mask to reference and actual images, and write a visible diff. The automated UI-only mismatch threshold is 2.5%; geometry guides are asserted separately so a broad mask cannot hide layout drift.
+
+**Step 3: Run the six contracts and confirm RED**
+
+```powershell
+npx.cmd playwright test tests/e2e/scene-visual.spec.ts --project=chromium
+```
+
+Expected: all unimplemented scenes fail with saved current/diff evidence. Commit no approved baselines other than the six user-supplied references.
+
+**Step 4: Use the contract throughout Tasks 4–8**
+
+Before styling each scene, run its named visual case and retain RED evidence. After the behavioural test and styling pass, rerun that scene. When documentary substitution makes a raw frame different, the masked UI contract must pass and the unmasked screenshot remains manual comparison evidence.
+
+**Step 5: Commit the harness**
+
+```powershell
+git add tests/visual tests/e2e/scene-visual.spec.ts
+git commit -m "test: add Komod reference comparison harness"
 ```
 
 ## Task 4: Implement the hero scene to the measured reference
@@ -345,7 +399,7 @@ git commit -m "feat: add truthful seasonal visit scene"
 
 **Step 1: Write failing validation and transport tests**
 
-Cover required name/phone/date/time/guest count, Russian phone normalisation, past-date rejection, guest bounds, deterministic WhatsApp text, URI encoding and fallback message display. Assert the interface says «подготовить заявку» and never says a reservation is confirmed.
+Cover the two-step next/back state, required date/time/guest count on step one, required name/phone on step two, Russian phone normalisation, past-date rejection, guest bounds, deterministic request-summary text, clipboard success/failure and persistent call fallback. Assert the interface says «подготовить заявку» and never says a reservation is confirmed. Assert no WhatsApp deep link is rendered because availability of the number on that platform is unverified.
 
 **Step 2: Run and confirm RED**
 
@@ -353,7 +407,7 @@ Run: `npm.cmd test -- --run src/lib/booking.test.ts src/components/BookingForm.t
 
 **Step 3: Implement honest booking behaviour**
 
-Use labelled native inputs, inline errors linked by `aria-describedby`, a live summary and an explicit submit action that opens a WhatsApp deep link in a user-initiated event. Always expose tel and Yandex route anchors. The stylised local SVG map must say it is schematic and link to the live map rather than impersonate accurate routing.
+Use labelled native inputs, inline errors linked by `aria-describedby`, explicit `Далее`/`Назад` controls, announced step names and a final live summary. The final action copies the prepared request text and keeps a visible `tel:` action for contacting the café; it does not send data or open an unverified messaging service. Always expose tel and Yandex route anchors. The stylised local SVG map must say it is schematic and link to the live map rather than impersonate accurate routing.
 
 **Step 4: Match contact geometry**
 
@@ -375,11 +429,16 @@ git commit -m "feat: add contacts and booking helper"
 
 ## Task 9: Create and verify derived visual assets
 
+**Required skills:** `imagegen`, `remove-background-local`, `design-taste-frontend`, `impeccable`.
+
 **Files:**
 
 - Create: `docs/IMAGEGEN.md`
 - Create: `public/media/generated-decorative/komod-paper-texture.webp`
 - Create: `public/media/generated-decorative/komod-illustration-sheet.webp`
+- Create: `public/media/documentary-derived/exterior-grade-v1.png`
+- Create: `public/media/documentary-derived/interior-extended-v1.png`
+- Create: `public/media/documentary-derived/breakfast-grade-v1.png`
 - Create: `public/media/documentary-derived/breakfast-cutout.png`
 - Create: `public/media/documentary-derived/coffee-cutout.png`
 - Create: `public/media/documentary-derived/checkerboard-previews/`
@@ -396,6 +455,8 @@ For any photo edit, preserve the unmodified documentary original and label the o
 **Step 2: Generate, inspect and iterate**
 
 Use ImageGen on the two decorative outputs and inspect them at original resolution. Reject embedded words, logos, watermarks, fake interface elements or scene-like imagery that could be mistaken for documentation. Iterate until the texture tiles without visible seams and the motif sheet can be used as small decorative crops.
+
+Then perform at least three separate built-in ImageGen edit calls after opening each local input with `view_image`: (1) exterior colour/lighting grade with facade, sign, people and geometry locked; (2) interior canvas extension/crop recovery with furniture, walls and perspective locked; (3) breakfast crop/colour grade with every food item, plate shape and portion locked. One request changes one property. Save every selected result under a versioned `documentary-derived` filename, compare it to the immutable Yandex original and reject any variant that adds/removes objects, changes signage, invents food or alters documentary meaning.
 
 **Step 3: Run local background removal with evidence**
 
@@ -420,6 +481,8 @@ git commit -m "feat: add verified Komod visual assets"
 ```
 
 ## Task 10: Complete system polish, accessibility and responsive tests
+
+**Required skills:** `browser:control-in-app-browser`, `playwright`, `design-taste-frontend`, `impeccable`, `test-driven-development`.
 
 **Files:**
 
@@ -483,6 +546,8 @@ git commit -m "test: verify Komod landing across viewports"
 
 ## Task 11: Independent review and corrections
 
+**Required skills:** `dispatching-parallel-agents`, `subagent-driven-development`, `antigravity-worker`, `requesting-code-review`, `test-driven-development`.
+
 **Files:**
 
 - Modify: only files justified by review findings
@@ -518,6 +583,8 @@ git commit -m "fix: address independent Komod landing review"
 
 ## Task 12: Finish, publish and preserve the local proof
 
+**Required skills:** `verification-before-completion`, `requesting-code-review`, `finishing-a-development-branch`.
+
 **Files:**
 
 - Create or modify: `README.md`
@@ -527,6 +594,13 @@ git commit -m "fix: address independent Komod landing review"
 **Step 1: Write the final handoff documents**
 
 `README.md` includes setup, fixed local URL, verification commands, content/media caveats and repository state. `docs/FINAL_REPORT.md` lists source access status, skill use, test/browser evidence, exact reference deviations with reasons, unresolved owner confirmations and commit/push evidence.
+
+Stage and commit the handoff material before the final clean-tree check:
+
+```powershell
+git add README.md docs/FINAL_REPORT.md docs/evidence docs/OPERATIONS_LOG.md
+git commit -m "docs: add Komod delivery evidence"
+```
 
 **Step 2: Perform verification-before-completion**
 
@@ -549,9 +623,9 @@ Keep `npm.cmd run dev -- --host 127.0.0.1 --port 4173 --strictPort` running and 
 
 Run the required requesting-code-review workflow. Resolve material findings, rerun the affected checks, then use finishing-a-development-branch to choose the user-authorised integration path. The target repository is the private `NNFall/comod`; do not make it public or enable public Pages while owner media rights remain unconfirmed.
 
-**Step 4: Push and verify the remote**
+**Step 4: Push, open the review integration and verify the remote**
 
-Push the reviewed branch/commit to `origin` as authorised by the user. Verify with `git ls-remote origin` and `gh repo view NNFall/comod --json url,visibility,defaultBranchRef`. Do not claim a public hosted URL unless a deployment was actually enabled and opened successfully.
+Push the reviewed feature branch to `origin`, open a pull request against the already-pushed `main`, and verify the PR checks. Use the branch-finishing decision for merge/retention; never make the private repository public or enable public Pages while owner media rights remain unconfirmed. Verify with `git ls-remote origin`, `gh pr view --json url,state,headRefName,baseRefName,statusCheckRollup` and `gh repo view NNFall/comod --json url,visibility,defaultBranchRef`. Do not claim a public hosted URL unless a deployment was actually enabled and opened successfully.
 
 **Step 5: Final evidence**
 

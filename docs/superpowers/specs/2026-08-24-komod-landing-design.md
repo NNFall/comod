@@ -26,7 +26,7 @@ The screenshots are displayed as full-page imagery with invisible interaction ho
 - The Yandex organisation card was directly opened on 24 August 2026. Stable-enough identity facts confirmed for the prototype: «Комод», Галактионовская ул., 130, Самара and +7 (927) 265-56-56. Rating, opening status, features, prices and counts are treated as volatile source snapshots rather than permanent brand facts.
 - Volatile counts changed between surfaces (495 photos on the overview and 489 in a later gallery view; reviews changed from a stored 1678 to 1679). The landing will not surface those counts.
 - Current menu items directly visible: Большой Морской завтрак 1250 ₽, Большой завтрак 1110 ₽, зелёная гречка с креветками 610 ₽, скрембл Карбонара 740 ₽, сырники с кокосовым кремом и вишнёвым конфи 490 ₽. Menu copy states that on-site dishes and prices may differ from delivery; the site links to the current source.
-- VK was not directly readable in the managed browser. No statement or photograph will be attributed to VK without direct evidence.
+- VK direct URLs were retried on 24 August 2026 through the available managed/public-source routes and returned a non-retryable open error. Search-indexed public snippets and a third-party mirror expose apparent VK-origin posts, but are not equivalent to direct VK review and contain inconsistent address metadata. They may inform a private research log only; no statement or photograph is attributed to VK until a directly viewable export, permalink or owner media pack is available.
 - The six supplied screenshots are `reference` assets. They set composition and style, not factual truth.
 - Public visibility is not a commercial-use licence. Yandex gallery files remain temporary, source-attributed prototype assets in the private repository until the café confirms authorship, depicted-person consent and permission for web use, cropping and AI-derived edits. A public production deployment must use an owner-approved media pack.
 
@@ -67,8 +67,8 @@ The screenshots are displayed as full-page imagery with invisible interaction ho
 
 - Verified address, telephone and current-hours link.
 - A stylised local SVG map provides the reference composition and links to Yandex for live routing; it is not presented as a precise navigation map.
-- A two-step booking helper validates name, phone, date/time and guest count, then prepares a WhatsApp message. It never claims a confirmed reservation and contains no backend or secret.
-- Direct call and route links remain available if JavaScript is unavailable.
+- A two-step booking helper validates visit details, then presents a copyable request summary and the verified `tel:` action. It never claims a confirmed reservation and contains no backend or secret. A WhatsApp deep link is not exposed because availability of that phone number in WhatsApp has not been verified.
+- `index.html` contains a visible `<noscript>` fallback with the verified phone and supplied Yandex route URL because the React application itself is client rendered.
 
 ## Responsive behaviour
 
@@ -91,7 +91,8 @@ The screenshots are displayed as full-page imagery with invisible interaction ho
 - `documentary-derived`: crop, colour grade or transparent cutout derived from a documentary file. It retains a source link and transformation note.
 - `reference`: the six user-supplied AI concept screens or mechanical crops from them.
 - `generated-decorative`: ImageGen output used only for texture, background, motif or clearly editorial composite. It is never labelled as a real view or dish.
-- Hero facade/interior and food source images may receive restrained ImageGen editorial grades only when exact objects, signage, geometry and dish composition are preserved. Original files remain in the repository for comparison.
+- Hero facade/interior and food source images receive versioned ImageGen edit trials for colour grade, canvas extension, crop recovery or local object cleanup. Each prompt names the edit target, locks geometry/signage/dish composition and changes only the requested property. Original files remain in the repository for side-by-side comparison; rejected variants are logged and never used.
+- The asset pass includes at least one texture generation, one decorative motif generation and three focused edit iterations across exterior, interior and food imagery. More iterations are allowed only when each one has a defined page placement and improves the reference match.
 - Remove Background is used for the documentary breakfast plate and coffee cup only if the checkerboard preview preserves edges and food details.
 
 ## Accessibility, performance and failure states
